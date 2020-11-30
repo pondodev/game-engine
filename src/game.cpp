@@ -1,6 +1,7 @@
 #include <iostream>
 #include "./constants.h"
 #include "./game.h"
+#include "../lib/glm/glm.hpp"
 
 Game::Game() {
     this->isRunning = false;
@@ -13,10 +14,8 @@ bool Game::IsRunning() const {
     return this->isRunning;
 }
 
-float projectilePosX = 0.0f;
-float projectilePosY = 0.0f;
-float projectileVelX = 20.0f;
-float projectileVelY = 30.0f;
+glm::vec2 projectilePos = glm::vec2(0.0f, 0.0f);
+glm::vec2 projectileVel = glm::vec2(20.0f, 20.0f);
 
 void Game::Initialise(int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -48,6 +47,8 @@ void Game::Initialise(int width, int height) {
 void Game::ProcessInput() {
     SDL_Event event;
     SDL_PollEvent(&event);
+
+    // input event handling
     switch (event.type) {
         case SDL_QUIT: {
             isRunning = false;
@@ -78,17 +79,18 @@ void Game::Update() {
     // clamp our delta time
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
 
-    projectilePosX += projectileVelX * deltaTime;
-    projectilePosY += projectileVelY * deltaTime;
+    projectilePos += projectileVel * deltaTime;
 }
 
 void Game::Render() {
+    // fill screen with grey
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
+    // draw projectile
     SDL_Rect projectile {
-        (int) projectilePosX,
-        (int) projectilePosY,
+        (int) projectilePos.x,
+        (int) projectilePos.y,
         10,
         10
     };
@@ -96,6 +98,7 @@ void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, &projectile);
 
+    // actually render to window
     SDL_RenderPresent(renderer);
 }
 
