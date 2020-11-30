@@ -14,6 +14,7 @@ class Game {
     public:
         Game();
         ~Game();
+        int ticksLastFrame;
         bool IsRunning() const;
         void Initialise(int width, int height);
         void ProcessInput();
