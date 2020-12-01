@@ -22,6 +22,17 @@ class Entity {
         void Render();
         void Destroy();
         bool IsActive() const;
+
+        // generic way of adding components to an entity
+        template <typename T, typename... TArgs> // T == type of component
+                                                 // TArgs == type of args for constructing component
+        T& AddComponent(TArgs&&... args) {
+            T* newComponent(new T(std::forward<TArgs>(args)...)); // construct the component itself
+            newComponent->owner = this;
+            components.emplace_back(newComponent);
+            newComponent->Initialise();
+            return *newComponent;
+        }
 };
 
 #endif

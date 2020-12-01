@@ -1,6 +1,7 @@
 #include <iostream>
 #include "./constants.h"
 #include "./game.h"
+#include "./components/transform_component.h"
 #include "../lib/glm/glm.hpp"
 
 EntityManager manager;
@@ -41,7 +42,14 @@ void Game::Initialise(int width, int height) {
         return;
     }
 
+    LoadLevel(0);
+
     isRunning = true;
+}
+
+void Game::LoadLevel(int levelNumber) {
+    Entity& newEntity(manager.AddEntity("projectile"));
+    newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 32, 32, 1);
 }
 
 void Game::ProcessInput() {
@@ -79,7 +87,7 @@ void Game::Update() {
     // clamp our delta time
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
 
-    // TODO: update entity manager
+    manager.Update(deltaTime);
 }
 
 void Game::Render() {
@@ -87,7 +95,9 @@ void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    // TODO: render entity manager
+    // only render if there are entities to render
+    if (manager.HasNoEntities()) return;
+    manager.Render();
 
     // actually render to window
     SDL_RenderPresent(renderer);
